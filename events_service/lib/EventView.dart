@@ -10,9 +10,9 @@ class EventView extends StatelessWidget {
 
   final String title;
   final DocumentReference ref;
-  late final String location;
-  late final String description;
-  late final DateTimeRange date;
+  String? location;
+  String? description;
+  DateTimeRange? date;
 
   final TextStyle labelStyle = const TextStyle(
     fontSize: 18,
@@ -22,14 +22,17 @@ class EventView extends StatelessWidget {
   Future retrieveData() async {
     DocumentSnapshot data = await ref.get();
     // title = data.get("title");
-    location = data.get("location");
-    description = data.get("description");
-    DateTime start = data.get('start');
-    DateTime end = data.get('end');
+    Map<String, dynamic> fields = data.data() as Map<String, dynamic>;
+
+    location = fields["location"];
+    description = fields["description"];
+    DateTime start = DateTime.parse(fields['start']);
+    DateTime end = DateTime.parse(fields['end']);
     date = DateTimeRange(
       start: start,
       end: end,
     );
+
     return;
   }
 
@@ -42,7 +45,7 @@ class EventView extends StatelessWidget {
         body: FutureBuilder(
           future: retrieveData(),
           builder: ((context, snapshot) {
-            if (!snapshot.hasData) return const Text("Loading...");
+            // if (!snapshot.hasData) return const Text("Loading...");
 
             return Column(
               children: <Widget>[
@@ -52,7 +55,7 @@ class EventView extends StatelessWidget {
                       "What? ",
                       style: labelStyle,
                     ),
-                    Text(description),
+                    Text(description ?? ""),
                   ],
                 ),
                 Row(
@@ -61,7 +64,8 @@ class EventView extends StatelessWidget {
                       "When? ",
                       style: labelStyle,
                     ),
-                    Text(date.toString()), // TODO: pretty date, calender?
+                    Text(
+                        date?.toString() ?? ""), // TODO: pretty date, calender?
                   ],
                 ),
                 Row(
@@ -70,7 +74,7 @@ class EventView extends StatelessWidget {
                       "Where? ",
                       style: labelStyle,
                     ),
-                    Text(location),
+                    Text(location ?? ""),
                   ],
                 ),
               ],
