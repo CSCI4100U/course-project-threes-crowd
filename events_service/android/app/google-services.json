@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745478017558",
+    "project_id": "mob-dev-threes-crowd",
+    "storage_bucket": "mob-dev-threes-crowd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745478017558:android:10e7adeb33f6786dcedb37",
+        "android_client_info": {
+          "package_name": "com.example.events_service"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745478017558-ru0g26atjud17okd0i9032li0se7qo0v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkQs0oUWZ5NbynemtzJjE14kdYp1wKy-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745478017558-ru0g26atjud17okd0i9032li0se7qo0v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
