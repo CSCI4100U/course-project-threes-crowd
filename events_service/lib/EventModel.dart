@@ -1,38 +1,28 @@
-import 'package:sqflite/sqflite.dart';
-
-import 'package:sqflite/sqflite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class EventModel {
-  Database? db;
+  late FirebaseFirestore firestore;
+  late CollectionReference eventsRef;
 
-  EventModel({
-    required String this.user,
-  });
-
-  final String user;
-
-  Future connect() async {
-    // user auth? switch on admin?
-    String databasesPath = await getDatabasesPath();
-    String path = '$databasesPath/events.db';
-
-    db = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (Database db, int version) async {
-        // When creating the db, create the table
-        await db.execute(
-            'CREATE TABLE Event (title TEXT, host TEXT, location TEXT)');
-
-        // await db.execute(
-        //     'INSERT INTO Event () VALUES ()');
-      },
-    );
+  EventModel() {
+    firestore = FirebaseFirestore.instance;
+    eventsRef = firestore.collection("events");
   }
 
-  Future getEvents() async {}
+  Stream<QuerySnapshot<Object?>> getEvents() {
+    return eventsRef.snapshots();
+  }
 
-  Future addEvent(String title, String location) async {}
+  Future addEvent(String title, String location) async {
+    await eventsRef.add({'title': title, 'location': location});
+  }
 
-  Future editEvent() async {}
+  Future editEvent(DocumentReference ref, String title, String location) async {
+    return await ref.update({'title': title, 'location': location});
+  }
+
+  Future deleteEvent(DocumentReference ref) async {
+    return await ref.delete();
+  }
 }
