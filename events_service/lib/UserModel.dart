@@ -4,7 +4,9 @@ import 'package:sqflite/sqflite.dart';
 class UserModel {
   Database? db;
 
-  UserModel();
+  UserModel() {
+    connect();
+  }
 
   Future connect() async {
     // user auth? switch on admin?
@@ -13,11 +15,10 @@ class UserModel {
 
     db = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (Database db, int version) async {
         // When creating the db, create the table
-        await db.execute(
-            'CREATE TABLE Event (title TEXT, host TEXT, location TEXT)');
+        await db.execute('CREATE TABLE Attending (doc_id TEXT PRIMARY KEY)');
 
         // await db.execute(
         //     'INSERT INTO Event () VALUES ()');
@@ -25,9 +26,22 @@ class UserModel {
     );
   }
 
-  Future getEvents() async {}
+  Future<List<Map<String, Object?>>> getAttending() async {
+    return (await db!.rawQuery('SELECT doc_id FROM Attending'));
+  }
 
-  Future addEvent(String title, String location) async {}
+  Future<bool> isAttending(String evt_id) async {
+    List<Map<String, Object?>> data = (await db!
+        .rawQuery('SELECT doc_id FROM Attending WHERE doc_id = ?', [evt_id]));
 
-  Future editEvent() async {}
+    return data.isNotEmpty;
+  }
+
+  Future<void> attendEvent(String evt_id) async {
+    await db!.execute('INSERT INTO Attending VALUES (?)', [evt_id]);
+  }
+
+  Future<void> delAttendence(String evt_id) async {
+    await db!.execute('DELETE FROM Attending WHERE doc_id = ?', [evt_id]);
+  }
 }
