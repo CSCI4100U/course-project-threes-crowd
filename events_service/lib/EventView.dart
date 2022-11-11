@@ -47,39 +47,79 @@ class EventView extends StatelessWidget {
           builder: ((context, snapshot) {
             // if (!snapshot.hasData) return const Text("Loading...");
 
-            return Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "What? ",
-                      style: labelStyle,
+            return Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
+                  Text(
+                    "When? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(
+                      //date?.toString() ?? "",
+                      "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
                     ),
-                    Text(description ?? ""),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "When? ",
-                      style: labelStyle,
-                    ),
-                    Text(
-                        date?.toString() ?? ""), // TODO: pretty date, calender?
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "Where? ",
-                      style: labelStyle,
-                    ),
-                    Text(location ?? ""),
-                  ],
-                ),
-              ],
+                    // TODO: pretty date, calendar?
+                  ),
+
+
+                  Text(
+                    "Where? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(location ?? ""),
+                  ),
+
+                  // TODO: put an interactive map to the location here?
+
+                  Text(
+                    "What? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(description ?? ""),
+                  ),
+
+                ],
+              ),
             );
+
           }),
         ));
   }
+}
+
+String prettifyDate(DateTime? input, {bool isShort=true}) {
+  // Returns a string representation of a date in the format
+  // "Weekday, Month Day, Year, 12HTime [AM/PM] [UTC]"
+  //
+  // isShort controls whether the shortened versions of month and weekday names should be used (three characters)
+  String out = "";
+  
+  if (input == null) {
+    return "Unknown";
+  }
+
+  List<String> weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  String dayName = isShort ? weekdays[input.weekday-1].substring(0,3) : weekdays[input.weekday-1];
+
+  List<String> months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  String month= isShort ? months[input.month-1].substring(0,3) : months[input.month-1];
+
+  String ampm = (input.hour < 12) ? "AM" : "PM";
+  String utc = input.isUtc ? "UTC" : "";
+
+  out = "$dayName, $month ${input.day}, ${input.year}, ${
+      (input.hour % 12 == 0) ? 12 : input.hour
+  }:${(input.minute / 10).floor() % 10}${input.minute % 10 // Formatting the minute digits (eg for things like XX:06)
+  } $ampm $utc";
+
+  return out;
 }
