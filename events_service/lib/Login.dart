@@ -45,6 +45,9 @@ class _LoginPageState extends State<LoginPage> {
                   controller: widget.userController,
                 ),
                 TextField(
+                  // todo: look into options to change dot size?
+                  // might be a bit small currently
+                  obscureText: true,
                   decoration: const InputDecoration(
                     labelText: "Password",
                   ),
