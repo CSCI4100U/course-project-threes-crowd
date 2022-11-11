@@ -47,38 +47,49 @@ class EventView extends StatelessWidget {
           builder: ((context, snapshot) {
             // if (!snapshot.hasData) return const Text("Loading...");
 
-            return Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "What? ",
-                      style: labelStyle,
+            return Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
+                  Text(
+                    "When? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(
+                      date?.toString() ?? "",
                     ),
-                    Text(description ?? ""),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "When? ",
-                      style: labelStyle,
-                    ),
-                    Text(
-                        date?.toString() ?? ""), // TODO: pretty date, calender?
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "Where? ",
-                      style: labelStyle,
-                    ),
-                    Text(location ?? ""),
-                  ],
-                ),
-              ],
+                    // TODO: pretty date, calendar?
+                  ),
+
+
+                  Text(
+                    "Where? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(location ?? ""),
+                  ),
+
+                  // TODO: put an interactive map to the location here?
+
+                  Text(
+                    "What? ",
+                    style: labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(description ?? ""),
+                  ),
+
+                ],
+              ),
             );
+
           }),
         ));
   }
