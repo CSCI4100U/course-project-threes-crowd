@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'EventsList.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,14 +14,48 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  var notificationsPlugin = new FlutterLocalNotificationsPlugin();
+  var initializationSettingsAndroid = AndroidInitializationSettings('mipmap/ic_launcher');
+  //var initializationSettingsIOS = new IOSInitializationSettings();
+
+  var initializationSettings;
+  var platformChannelInfo;
+  
+  var androidPlatformChannelInfo = AndroidNotificationDetails(
+    'Events+',
+    'Events+ - Notifications',
+    channelDescription:'Currently just a welcome, but soon, it\'ll contain scheduled reminders!',
+    importance: Importance.max,
+    priority: Priority.max,
+    ticker: 'ticker'
+  );
+
   Future login() async {
     // todo: role checking?
+    var eventID = 7;
+    notificationsPlugin.show(
+      eventID,
+      "Welcome back!",
+      "Let's see what you have scheduled.",
+      platformChannelInfo
+    );
+
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => EventsList()));
   }
 
   @override
   Widget build(BuildContext context) {
+    initializationSettings = new InitializationSettings(android: initializationSettingsAndroid);
+
+    notificationsPlugin.initialize(
+      initializationSettings,
+    );
+
+    platformChannelInfo = NotificationDetails(
+      android: androidPlatformChannelInfo
+    );
+
     return Container(
       padding: const EdgeInsets.all(12.0),
       alignment: Alignment.topCenter,
