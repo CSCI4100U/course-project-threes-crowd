@@ -89,6 +89,18 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+          TextButton(
+            onPressed: (){
+              print('register');
+            }, 
+            child: const Text("Register"),
+            style: TextButton.styleFrom(
+              primary: Colors.black,
+              textStyle: TextStyle(
+                fontSize: 20,
+                ),
+            ),
+          ),
           Container(
             height: 50,
             width: 250,
@@ -102,38 +114,38 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          /*
-          Form(
-            key: widget.formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextField(
-                  decoration: const InputDecoration(
-                    labelText: "Username",
-                  ),
-                  controller: widget.userController,
-                ),
-                TextField(
-                  // todo: look into options to change dot size?
-                  // might be a bit small currently
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                  ),
-                  controller: widget.passController,
-                ),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: login,
-                    child: const Text("Login"),
-                  ),
-                ),
-              ],
+          Align(
+            alignment: Alignment.bottomRight,
+            child: TextButton(
+              onPressed: () {
+                showAbout(context);
+              },
+              child: Text("About"),
             ),
+          ),
+          /*
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+              child: ElevatedButton(
+                onPressed: (){
+                  showAbout(context);
+                },
+                child: Text("About"),
+              ),
           )*/
         ],
       ),
+    );
+  }
+
+  showAbout(context){
+    showAboutDialog(context: context,
+    applicationName: "EVENT+",
+      applicationVersion: "1.0",
+      applicationLegalese: "xxx",
+      children: [
+        Text("  A registration app\n"),
+      ]
     );
   }
 }
