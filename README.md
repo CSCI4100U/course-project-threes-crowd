@@ -6,7 +6,7 @@ Group members (3-5) (no Student IDs, only names and github usernames):
 
 2. Ben Armstrong : digital-drreams
 
-3. 
+3. Yanguang Yang: : Yanguang-Yang
 
 4. 
 
