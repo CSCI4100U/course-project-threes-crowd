@@ -31,16 +31,21 @@ class _EventsListState extends State<EventsList> {
   }
 
   Future<void> updateAttending(String evt_id) async {
+    String? text;
+
     if (await widget.local_storage.isAttending(evt_id)) {
       await widget.local_storage.delAttendence(evt_id);
+      text = 'Attendence deleted';
     } else {
       await widget.local_storage.attendEvent(evt_id);
+      text = 'Attended';
     }
 
-    SnackBar notif = const SnackBar(
-      content: Text("Attendance Updated"),
+    SnackBar notif = SnackBar(
+      content: Text(text),
     );
 
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(notif);
 
     List<String> newEvts = await loadEvents();

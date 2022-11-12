@@ -33,6 +33,41 @@ class _LoginPageState extends State<LoginPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: TextField(
+                decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'User Name',
+                hintText: 'Enter your E-mail or sth'
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
+                hintText: 'Enter your password'
+              ),
+            ),
+          ),
+          Container(
+            height: 50,
+            width: 250,
+            decoration: BoxDecoration(
+                color: Colors.blue, borderRadius: BorderRadius.circular(8)),
+            child: TextButton(
+              onPressed: login,
+              child: Text(
+                'Login',
+                style: TextStyle(color: Colors.white, fontSize: 30),
+              ),
+            ),
+          ),
+          /*
           Form(
             key: widget.formKey,
             child: Column(
@@ -61,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-          )
+          )*/
         ],
       ),
     );
