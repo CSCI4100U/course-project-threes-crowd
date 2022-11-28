@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:events_service/EventModel.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,8 @@ class _EventFormState extends State<EventForm> {
         _end);
 
     SnackBar notif = SnackBar(
-      content: Text("Event ${widget.titleController.text} Saved"),
+      content: Text(
+          "${AppLocalizations.of(context)!.eventSaved1} ${widget.titleController.text} ${AppLocalizations.of(context)!.eventSaved2}"),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(notif);
@@ -73,7 +75,7 @@ class _EventFormState extends State<EventForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Event"),
+        title: Text(AppLocalizations.of(context)!.editEvent),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -81,24 +83,24 @@ class _EventFormState extends State<EventForm> {
           children: <Widget>[
             TextField(
               controller: widget.titleController,
-              decoration: const InputDecoration(
-                labelText: "Title",
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.editTitle,
               ),
             ),
             TextField(
               controller: widget.locationController,
-              decoration: const InputDecoration(
-                labelText: "Location",
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.editLocation,
               ),
             ),
             TextField(
               controller: widget.descController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: "Description",
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.editDesc,
               ),
             ),
-            const Text("Date"),
+            Text(AppLocalizations.of(context)!.editDate),
             SfDateRangePicker(
               onSelectionChanged: _onSelectionChanged,
               selectionMode: DateRangePickerSelectionMode.range,
@@ -112,7 +114,7 @@ class _EventFormState extends State<EventForm> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => submitData(),
-        tooltip: "Submit event",
+        tooltip: AppLocalizations.of(context)!.submitEvent,
         child: const Icon(Icons.save),
       ),
     );

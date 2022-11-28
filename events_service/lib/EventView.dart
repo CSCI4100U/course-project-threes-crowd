@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EventView extends StatelessWidget {
   EventView({
@@ -69,7 +73,7 @@ class EventView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "When? ",
+                    AppLocalizations.of(context)!.when,
                     style: labelStyle,
                   ),
                   Padding(
@@ -82,7 +86,7 @@ class EventView extends StatelessWidget {
                   ),
 
                   Text(
-                    "Where? ",
+                    AppLocalizations.of(context)!.where,
                     style: labelStyle,
                   ),
                   Padding(
@@ -93,7 +97,7 @@ class EventView extends StatelessWidget {
                   // TODO: put an interactive map to the location here?
 
                   Text(
-                    "What? ",
+                    AppLocalizations.of(context)!.what,
                     style: labelStyle,
                   ),
                   Padding(
@@ -119,33 +123,14 @@ String prettifyDate(DateTime? input, {bool isShort = true}) {
     return "Unknown";
   }
 
-  List<String> weekdays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
-  ];
+  List<String> weekdays =
+      DateFormat.EEEE(Platform.localeName).dateSymbols.STANDALONEWEEKDAYS;
   String dayName = isShort
-      ? weekdays[input.weekday - 1].substring(0, 3)
-      : weekdays[input.weekday - 1];
+      ? weekdays[input.weekday].substring(0, 3)
+      : weekdays[input.weekday];
 
-  List<String> months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
+  List<String> months =
+      DateFormat.MMMM(Platform.localeName).dateSymbols.STANDALONEMONTHS;
   String month = isShort
       ? months[input.month - 1].substring(0, 3)
       : months[input.month - 1];
