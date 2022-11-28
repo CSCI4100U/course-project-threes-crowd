@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:events_service/EventView.dart';
 import 'package:events_service/UserModel.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class EventTile extends StatelessWidget {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Attending?"),
+              Text(AppLocalizations.of(context)!.attending),
               GestureDetector(
                 onTap: () => updateAttending(),
                 child: Icon(icon),

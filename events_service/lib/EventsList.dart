@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'EventTile.dart';
 import 'EventModel.dart';
 import 'UserModel.dart';
@@ -35,10 +36,10 @@ class _EventsListState extends State<EventsList> {
 
     if (await widget.local_storage.isAttending(evt_id)) {
       await widget.local_storage.delAttendence(evt_id);
-      text = 'Attendence deleted';
+      text = AppLocalizations.of(context)!.attendenceDelete;
     } else {
       await widget.local_storage.attendEvent(evt_id);
-      text = 'Attended';
+      text = AppLocalizations.of(context)!.attendenceAdd;
     }
 
     SnackBar notif = SnackBar(
@@ -59,14 +60,16 @@ class _EventsListState extends State<EventsList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Events"),
+          title: Text(AppLocalizations.of(context)!.events),
           actions: const <Widget>[],
         ),
         body: StreamBuilder(
             stream: widget.eventStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) return const Text("Loading...");
+              if (!snapshot.hasData) {
+                return Text(AppLocalizations.of(context)!.loading);
+              }
 
               return FutureBuilder(
                 future: loadEvents(),
