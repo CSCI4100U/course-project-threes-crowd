@@ -126,8 +126,8 @@ String prettifyDate(DateTime? input, {bool isShort = true}) {
   List<String> weekdays =
       DateFormat.EEEE(Platform.localeName).dateSymbols.STANDALONEWEEKDAYS;
   String dayName = isShort
-      ? weekdays[input.weekday].substring(0, 3)
-      : weekdays[input.weekday];
+      ? weekdays[input.weekday - 1].substring(0, 3)
+      : weekdays[input.weekday - 1];
 
   List<String> months =
       DateFormat.MMMM(Platform.localeName).dateSymbols.STANDALONEMONTHS;
