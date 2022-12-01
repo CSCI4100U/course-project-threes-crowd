@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 class EventForm extends StatefulWidget {
   EventForm({
     super.key,
-    required DocumentReference? this.ref,
+    this.ref,
   }) {
     if (ref != null) {
       ref!.get().then((snapshot) {
@@ -55,13 +55,25 @@ class _EventFormState extends State<EventForm> {
   }
 
   Future<void> submitData() async {
-    await widget.db.editEvent(
-        widget.ref!,
+    if (widget.ref == null) {
+      // creating
+      widget.db.addEvent(
         widget.titleController.text,
         widget.locationController.text,
         widget.descController.text,
         _start,
-        _end);
+        _end,
+      );
+    } else {
+      // editing
+      await widget.db.editEvent(
+          widget.ref!,
+          widget.titleController.text,
+          widget.locationController.text,
+          widget.descController.text,
+          _start,
+          _end);
+    }
 
     SnackBar notif = SnackBar(
       content: Text(

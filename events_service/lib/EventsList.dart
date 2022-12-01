@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'EventTile.dart';
 import 'EventModel.dart';
 import 'UserModel.dart';
+import 'EventForm.dart';
 
 class EventsList extends StatefulWidget {
   EventsList({super.key});
@@ -56,12 +57,22 @@ class _EventsListState extends State<EventsList> {
     });
   }
 
+  void onTapAdd(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => EventForm()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.events),
-          actions: const <Widget>[],
+          actions: <Widget>[
+            IconButton(
+              onPressed: () => onTapAdd(context),
+              icon: const Icon(Icons.add),
+            ),
+          ],
         ),
         body: StreamBuilder(
             stream: widget.eventStream,

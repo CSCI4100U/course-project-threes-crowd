@@ -14,8 +14,15 @@ class EventModel {
     return eventsRef.snapshots();
   }
 
-  Future addEvent(String title, String location) async {
-    await eventsRef.add({'title': title, 'location': location});
+  Future addEvent(String title, String location, String desc, String dateStart,
+      String dateEnd) async {
+    await eventsRef.add({
+      'title': title,
+      'location': location,
+      'description': desc,
+      'start': dateStart,
+      'end': dateEnd,
+    });
   }
 
   Future editEvent(DocumentReference ref, String title, String location,

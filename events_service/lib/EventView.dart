@@ -9,8 +9,8 @@ import 'package:intl/intl.dart';
 class EventView extends StatelessWidget {
   EventView({
     super.key,
-    required String this.title,
-    required DocumentReference<Object?> this.ref,
+    required this.title,
+    required this.ref,
   });
 
   final String title;

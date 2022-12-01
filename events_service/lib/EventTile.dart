@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 class EventTile extends StatelessWidget {
   EventTile({
     super.key,
-    required String this.title,
-    required String this.location,
-    required DocumentReference<Object?> this.ref,
-    required bool this.attending,
-    required Function this.updateAttending,
+    required this.title,
+    required this.location,
+    required this.ref,
+    required this.attending,
+    required this.updateAttending,
   });
 
   final DocumentReference ref;
@@ -29,23 +29,6 @@ class EventTile extends StatelessWidget {
                   ref: ref,
                 )));
   }
-
-  // Future<bool> isAttending() async {
-  //   // results in mutliple connection calls. how to await for these calls on init?
-  //   await local_storage.connect();
-  //   return await local_storage.isAttending(evt_id);
-  // }
-
-  // void onTapAttending() async {
-  //   if (await local_storage.isAttending(evt_id)) {
-  //     print("del");
-  //     await local_storage.delAttendence(evt_id);
-  //   } else {
-  //     await local_storage.attendEvent(evt_id);
-  //     print("add");
-  //   }
-  //   await isAttending();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -70,40 +53,5 @@ class EventTile extends StatelessWidget {
         ),
       ),
     );
-
-    // return FutureBuilder(
-    //   future: isAttending(),
-    //   initialData: false,
-    //   builder: ((context, snapshot) {
-    // if (snapshot.hasError) print(snapshot.error);
-
-    // return Row(
-    //   children: <Widget>[
-    //     Expanded(
-    //       child: ListTile(
-    //         title: Text(title),
-    //         subtitle: Text(location),
-    //       ),
-    //     ),
-    //     // Column(children: [
-
-    //     // ],)
-    //     // GestureDetector(
-    //     //   onTap: () => onTap(context),
-    //     //   child: ListTile(
-    //     //     title: Text(title),
-    //     //     subtitle: Text(location),
-    //     //   ),
-    //     // ),
-    //     Column(
-    //       children: <Widget>[
-    //         const Text("Attending?"),
-    //         Icon(icon),
-    //       ],
-    //     ),
-    //   ],
-    // );
-    //   }),
-    // );
   }
 }
