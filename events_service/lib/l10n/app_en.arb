@@ -2,6 +2,7 @@
     "title": "Events+",
     "attendenceAdd": "Attended",
     "attendenceDelete": "Attendance Deleted",
+    "attendence": "Attendance",
     "events": "Events",
     "loading": "Loading...",
     "attending": "Attending?",
