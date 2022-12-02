@@ -14,6 +14,15 @@ class EventModel {
     return eventsRef.snapshots();
   }
 
+  Future<List<Map>> getEventsList() async {
+    QuerySnapshot snapshot = await eventsRef.get();
+    List<DocumentSnapshot> doc_list = snapshot.docs;
+
+    return doc_list.map((e) {
+      return e.data() as Map;
+    }).toList();
+  }
+
   Future addEvent(String title, String location, String desc, String dateStart,
       String dateEnd) async {
     await eventsRef.add({
