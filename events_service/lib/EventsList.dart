@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'Analytics.dart';
 import 'EventTile.dart';
 import 'EventModel.dart';
 import 'UserModel.dart';
@@ -32,13 +33,15 @@ class _EventsListState extends State<EventsList> {
     return attend.map((row) => row["doc_id"] as String).toList();
   }
 
-  Future<void> updateAttending(String evt_id) async {
+  Future<void> updateAttending(String evt_id, DocumentReference ref) async {
     String? text;
 
     if (await widget.local_storage.isAttending(evt_id)) {
+      await widget.cloud.updateAttendence(ref, false);
       await widget.local_storage.delAttendence(evt_id);
       text = AppLocalizations.of(context)!.attendenceDelete;
     } else {
+      await widget.cloud.updateAttendence(ref, true);
       await widget.local_storage.attendEvent(evt_id);
       text = AppLocalizations.of(context)!.attendenceAdd;
     }
@@ -62,6 +65,11 @@ class _EventsListState extends State<EventsList> {
         MaterialPageRoute(builder: (BuildContext context) => EventForm()));
   }
 
+  void onTapAnalytics(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => Analytics()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +80,10 @@ class _EventsListState extends State<EventsList> {
               onPressed: () => onTapAdd(context),
               icon: const Icon(Icons.add),
             ),
+            IconButton(
+              onPressed: () => onTapAnalytics(context),
+              icon: const Icon(Icons.analytics),
+            )
           ],
         ),
         body: StreamBuilder(
@@ -96,7 +108,8 @@ class _EventsListState extends State<EventsList> {
                         location: data["location"],
                         ref: doc.reference,
                         attending: widget.attendingEvents.contains(doc.id),
-                        updateAttending: () => updateAttending(doc.id),
+                        updateAttending: () =>
+                            updateAttending(doc.id, doc.reference),
                       );
                     }).toList(),
                   ),

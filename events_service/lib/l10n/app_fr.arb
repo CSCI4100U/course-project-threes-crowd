@@ -2,6 +2,7 @@
     "title": "Evenements+",
     "attendenceAdd": "Presence a",
     "attendenceDelete": "Presence supprimee",
+    "attendence": "Presence",
     "events": "Evenements",
     "loading": "Chargement...",
     "attending": "Vous etes present?",

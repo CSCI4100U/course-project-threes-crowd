@@ -2,6 +2,7 @@
     "title": "Eventos+",
     "attendenceAdd": "Asistio a",
     "attendenceDelete": "Asistencia Suprimida",
+    "attendence": "Asistencia",
     "events": "Eventos",
     "loading": "Cargando...",
     "attending": "Asistir?",
