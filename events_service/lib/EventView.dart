@@ -6,7 +6,7 @@ import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class EventView extends StatelessWidget {
+class EventView extends StatefulWidget {
   EventView({
     super.key,
     required this.title,
@@ -15,17 +15,23 @@ class EventView extends StatelessWidget {
 
   final String title;
   final DocumentReference ref;
-  String? location;
-  String? description;
-  DateTimeRange? date;
 
   final TextStyle labelStyle = const TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
   );
 
+  @override
+  State<EventView> createState() => _EventViewState();
+}
+
+class _EventViewState extends State<EventView> {
+  String? location;
+  String? description;
+  DateTimeRange? date;
+
   Future retrieveData() async {
-    DocumentSnapshot data = await ref.get();
+    DocumentSnapshot data = await widget.ref.get();
     // title = data.get("title");
     Map<String, dynamic> fields = data.data() as Map<String, dynamic>;
 
@@ -41,20 +47,22 @@ class EventView extends StatelessWidget {
     return;
   }
 
-  void onEdit(BuildContext context) {
-    Navigator.push(
+  void onEdit(BuildContext context) async {
+    await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => EventForm(
-                  ref: ref,
-                )));
+              ref: widget.ref,
+            )));
+    await retrieveData();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(widget.title),
           actions: <Widget>[
             IconButton(
               onPressed: () => onEdit(context),
@@ -74,7 +82,7 @@ class EventView extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     AppLocalizations.of(context)!.when,
-                    style: labelStyle,
+                    style: widget.labelStyle,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
@@ -87,7 +95,7 @@ class EventView extends StatelessWidget {
 
                   Text(
                     AppLocalizations.of(context)!.where,
-                    style: labelStyle,
+                    style: widget.labelStyle,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
@@ -98,7 +106,7 @@ class EventView extends StatelessWidget {
 
                   Text(
                     AppLocalizations.of(context)!.what,
-                    style: labelStyle,
+                    style: widget.labelStyle,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
