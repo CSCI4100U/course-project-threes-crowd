@@ -89,40 +89,38 @@ class _EventFormState extends State<EventForm> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.editEvent),
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: widget.titleController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editTitle,
-              ),
+        children: <Widget>[
+          TextField(
+            controller: widget.titleController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editTitle,
             ),
-            TextField(
-              controller: widget.locationController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editLocation,
-              ),
+          ),
+          TextField(
+            controller: widget.locationController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editLocation,
             ),
-            TextField(
-              controller: widget.descController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editDesc,
-              ),
+          ),
+          TextField(
+            controller: widget.descController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editDesc,
             ),
-            Text(AppLocalizations.of(context)!.editDate),
-            SfDateRangePicker(
-              onSelectionChanged: _onSelectionChanged,
-              selectionMode: DateRangePickerSelectionMode.range,
-              initialSelectedRange: PickerDateRange(
-                widget.dateStart,
-                widget.dateEnd,
-              ),
+          ),
+          Text(AppLocalizations.of(context)!.editDate),
+          SfDateRangePicker(
+            onSelectionChanged: _onSelectionChanged,
+            selectionMode: DateRangePickerSelectionMode.range,
+            initialSelectedRange: PickerDateRange(
+              widget.dateStart,
+              widget.dateEnd,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => submitData(),
