@@ -6,6 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:path/path.dart';
 
 class EventView extends StatefulWidget {
   EventView({
@@ -29,6 +31,7 @@ class EventView extends StatefulWidget {
 class _EventViewState extends State<EventView> {
   String? location;
   String? description;
+  String? latnlng;
   DateTimeRange? date;
 
   Future retrieveData() async {
@@ -38,6 +41,7 @@ class _EventViewState extends State<EventView> {
 
     location = fields["location"];
     description = fields["description"];
+    latnlng = fields["latnlng"];
     DateTime start = DateTime.parse(fields['start']);
     DateTime end = DateTime.parse(fields['end']);
     date = DateTimeRange(
@@ -59,10 +63,15 @@ class _EventViewState extends State<EventView> {
     setState(() {});
   }
 
-  void showMap(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => EventMap()));
-  }
+  /*
+  void showMap(BuildContext context) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => EventMap(
+            loc: widget.ref,
+        )));
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +81,6 @@ class _EventViewState extends State<EventView> {
           actions: <Widget>[
             IconButton(
               onPressed: () => onEdit(context),
-              icon: const Icon(Icons.edit),
-            ),
-            IconButton(
-              onPressed: () {
-                showMap(context);
-              },
               icon: const Icon(Icons.edit),
             ),
           ],
@@ -123,6 +126,19 @@ class _EventViewState extends State<EventView> {
                   Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
                     child: Text(description ?? ""),
+                  ),
+
+                  FloatingActionButton(
+                    onPressed: (){
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => EventMap(
+                            loc: latnlng,
+                          ))
+                      );
+                      setState(() {
+                        
+                      });
+                    },
                   ),
                   
                 ],
