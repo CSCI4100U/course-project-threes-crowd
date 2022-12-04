@@ -57,8 +57,8 @@ class _EventViewState extends State<EventView> {
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => EventForm(
-              ref: widget.ref,
-            )));
+                  ref: widget.ref,
+                )));
     await retrieveData();
     setState(() {});
   }
@@ -76,79 +76,73 @@ class _EventViewState extends State<EventView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => onEdit(context),
-              icon: const Icon(Icons.edit),
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => onEdit(context),
+            icon: const Icon(Icons.edit),
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: retrieveData(),
+        builder: ((context, snapshot) {
+          // if (!snapshot.hasData) return const Text("Loading...");
+
+          return Padding(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  AppLocalizations.of(context)!.when,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(
+                    //date?.toString() ?? "",
+                    "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
+                  ),
+                  // TODO: pretty date, calendar?
+                ),
+
+                Text(
+                  AppLocalizations.of(context)!.where,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(location ?? ""),
+                ),
+
+                // TODO: put an interactive map to the location here?
+
+                Text(
+                  AppLocalizations.of(context)!.what,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(description ?? ""),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: retrieveData(),
-          builder: ((context, snapshot) {
-            // if (!snapshot.hasData) return const Text("Loading...");
-
-            return Padding(
-              padding: const EdgeInsets.all(4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    AppLocalizations.of(context)!.when,
-                    style: widget.labelStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 12),
-                    child: Text(
-                      //date?.toString() ?? "",
-                      "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
-                    ),
-                    // TODO: pretty date, calendar?
-                  ),
-
-                  Text(
-                    AppLocalizations.of(context)!.where,
-                    style: widget.labelStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 12),
-                    child: Text(location ?? ""),
-                  ),
-
-                  // TODO: put an interactive map to the location here?
-
-                  Text(
-                    AppLocalizations.of(context)!.what,
-                    style: widget.labelStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 12),
-                    child: Text(description ?? ""),
-                  ),
-
-                  FloatingActionButton(
-                    onPressed: (){
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EventMap(
-                            loc: latnlng,
-                          ))
-                      );
-                      setState(() {
-                        
-                      });
-                    },
-                  ),
-                  
-                ],
-              ),
-            );
-          }),
-        ),
-        
-        
-        );
+          );
+        }),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => EventMap(
+                    loc: latnlng,
+                  )));
+          setState(() {});
+        },
+        child: const Icon(Icons.map),
+      ),
+    );
   }
 }
 
