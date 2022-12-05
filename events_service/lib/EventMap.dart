@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'constants.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class EventMap extends StatefulWidget {
   EventMap({Key? key, this.loc}) : super(key: key);
@@ -45,11 +47,11 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('Where?'),
+        title: Text(widget.loc!.toString()),
         actions: [
           IconButton(
             onPressed: () {
-                _animatedMapMove(currentLocation, 14);
+                _animatedMapMove(currentLocation, 13);
             }, 
             icon: Icon(Icons.gps_fixed))
         ],
