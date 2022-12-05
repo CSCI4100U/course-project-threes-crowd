@@ -24,7 +24,7 @@ class EventModel {
   }
 
   Future addEvent(String title, String location, String desc, String dateStart,
-      String dateEnd, int attendenceCap) async {
+      String dateEnd) async {
     await eventsRef.add({
       'title': title,
       'location': location,
@@ -32,19 +32,17 @@ class EventModel {
       'start': dateStart,
       'end': dateEnd,
       'attendence': 0,
-      'attendenceCap': attendenceCap,
     });
   }
 
   Future editEvent(DocumentReference ref, String title, String location,
-      String desc, String dateStart, String dateEnd, int attendenceCap) async {
+      String desc, String dateStart, String dateEnd) async {
     return await ref.update({
       'title': title,
       'location': location,
       'description': desc,
       'start': dateStart,
       'end': dateEnd,
-      'attendenceCap': attendenceCap
     });
   }
 
