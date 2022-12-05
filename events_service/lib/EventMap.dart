@@ -7,9 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class EventMap extends StatefulWidget {
-  EventMap({Key? key, this.loc}) : super(key: key);
+  EventMap({Key? key, this.loc, this.current_loc}) : super(key: key);
 
   LatLng? loc;
+  Position? current_loc;
 
   @override
   State<EventMap> createState() => _EventMapState();
@@ -17,7 +18,7 @@ class EventMap extends StatefulWidget {
 
 class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
 
-  var currentLocation = AppConstants.myLocation;
+  var currentLocation;
 
   late MapController mapController;
 
@@ -29,6 +30,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+    currentLocation = LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
 
     Geolocator.isLocationServiceEnabled().then((value) => null);
     Geolocator.requestPermission().then((value) => null);
@@ -84,7 +86,20 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
                             ),
                           );
                         }
-                  )
+                  ),
+                  Marker(
+                    point: LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude), 
+                    builder: (context){
+                          return Container(
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.location_on,
+                              color: Colors.red),
+                              iconSize: 30,
+                            ),
+                          );
+                        }
+                  ),
                 ]
               )
             ],
