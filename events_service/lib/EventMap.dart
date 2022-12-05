@@ -15,45 +15,38 @@ class EventMap extends StatefulWidget {
   State<EventMap> createState() => _EventMapState();
 }
 
-class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
-
+class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
   var currentLocation = AppConstants.myLocation;
 
   late MapController mapController;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     mapController = MapController();
   }
 
   @override
   Widget build(BuildContext context) {
-
     Geolocator.isLocationServiceEnabled().then((value) => null);
     Geolocator.requestPermission().then((value) => null);
-    Geolocator.checkPermission().then(
-            (LocationPermission permission)
-        {
-          print("Check Location Permission: $permission");
-        }
-    );
+    Geolocator.checkPermission().then((LocationPermission permission) {
+      print("Check Location Permission: $permission");
+    });
 
     Geolocator.getPositionStream(
-      locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.best
-      ),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.best),
     ).listen(_updateLocationStream);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.loc!.toString()),
         actions: [
           IconButton(
-            onPressed: () {
+              onPressed: () {
                 _animatedMapMove(currentLocation, 13);
-            }, 
-            icon: Icon(Icons.gps_fixed))
+              },
+              icon: const Icon(Icons.gps_fixed))
         ],
       ),
       body: Stack(
@@ -70,23 +63,22 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
               TileLayerOptions(
                 urlTemplate: AppConstants.mapBoxStyleId,
               ),
-              MarkerLayerOptions(
-                markers: [
-                  Marker(
-                    point: widget.loc!, 
-                    builder: (context){
-                          return Container(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.location_on,
-                              color: Colors.blue),
-                              iconSize: 30,
-                            ),
-                          );
-                        }
-                  )
-                ]
-              )
+              MarkerLayerOptions(markers: [
+                Marker(
+                    point: widget.loc!,
+                    builder: (context) {
+                      return Container(
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.location_on,
+                            color: Colors.blue,
+                          ),
+                          iconSize: 30,
+                        ),
+                      );
+                    })
+              ])
             ],
           ),
         ],
@@ -94,9 +86,8 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     );
   }
 
-  _updateLocationStream(Position userLocation) async{
-    
-      currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
+  _updateLocationStream(Position userLocation) async {
+    currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
@@ -114,7 +105,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     // The animation determines what path the animation will take. You can try different Curves values, although I found
     // fastOutSlowIn to be my favorite.
     Animation<double> animation =
-    CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
 
     controller.addListener(() {
       mapController.move(
@@ -133,5 +124,4 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
 
     controller.forward();
   }
-
 }

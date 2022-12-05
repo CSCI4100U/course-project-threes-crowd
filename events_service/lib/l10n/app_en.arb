@@ -30,5 +30,7 @@
     "notifications": "Notifications",
     "welcome": "Welcome back!",
     "schedule": "Let's see what you have scheduled",
-    "channelDesc": "Currently just a welcome, but soon, it'll contain scheduled reminders!"
+    "channelDesc": "Currently just a welcome, but soon, it'll contain scheduled reminders!",
+
+    "attendenceCap": "Attendance Cap"
 }
