@@ -32,9 +32,8 @@ class EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget icon = attending
-        ? const Icon(Icons.radio_button_checked)
-        : const Icon(Icons.radio_button_unchecked);
+    IconData icon =
+        attending ? Icons.radio_button_checked : Icons.radio_button_unchecked;
     return Card(
       child: GestureDetector(
         onTap: () => _onTapTile(context),
@@ -47,7 +46,7 @@ class EventTile extends StatelessWidget {
               Text(AppLocalizations.of(context)!.attending),
               GestureDetector(
                 onTap: () => updateAttending(),
-                child: icon,
+                child: Icon(icon),
               ),
             ],
           ),

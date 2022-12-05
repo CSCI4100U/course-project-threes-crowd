@@ -20,12 +20,12 @@ class _LoginPageState extends State<LoginPage> {
       const AndroidInitializationSettings('mipmap/ic_launcher');
   //var initializationSettingsIOS = new IOSInitializationSettings();
 
-  var initializationSettings;
-  var platformChannelInfo;
+  InitializationSettings? initializationSettings;
+  NotificationDetails? platformChannelInfo;
 
   Future login(BuildContext context) async {
     // todo: role checking?
-    var eventID = 7;
+    int eventID = 7;
     notificationsPlugin.show(eventID, AppLocalizations.of(context)!.welcome,
         AppLocalizations.of(context)!.schedule, platformChannelInfo);
 
@@ -35,19 +35,19 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    var androidPlatformChannelInfo = AndroidNotificationDetails(
-        AppLocalizations.of(context)!.title,
-        '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.notifications}',
-        channelDescription: AppLocalizations.of(context)!.channelDesc,
-        importance: Importance.max,
-        priority: Priority.max,
-        ticker: 'ticker');
+    AndroidNotificationDetails androidPlatformChannelInfo =
+        AndroidNotificationDetails(AppLocalizations.of(context)!.title,
+            '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.notifications}',
+            channelDescription: AppLocalizations.of(context)!.channelDesc,
+            importance: Importance.max,
+            priority: Priority.max,
+            ticker: 'ticker');
 
     initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
     notificationsPlugin.initialize(
-      initializationSettings,
+      initializationSettings!,
     );
 
     platformChannelInfo =
