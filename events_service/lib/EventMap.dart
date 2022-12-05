@@ -5,6 +5,7 @@ import 'constants.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EventMap extends StatefulWidget {
   EventMap({Key? key, this.loc}) : super(key: key);
@@ -40,7 +41,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Where?'),
+        title: Text(AppLocalizations.of(context)!.where),
         actions: [
           IconButton(
               onPressed: () {

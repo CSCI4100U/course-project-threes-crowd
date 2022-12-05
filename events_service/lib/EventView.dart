@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:events_service/EventMap.dart';
+import 'package:events_service/LoadingSpinner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _EventViewState extends State<EventView> {
   }
 
   showMap() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => EventMap(
               loc: send_loc,
@@ -92,7 +93,7 @@ class _EventViewState extends State<EventView> {
       body: FutureBuilder(
         future: retrieveData(),
         builder: ((context, snapshot) {
-          // if (!snapshot.hasData) return const Text("Loading...");
+          if (!snapshot.hasData) return const LoadingSpinner();
 
           return Padding(
             padding: const EdgeInsets.all(4),
@@ -134,7 +135,7 @@ class _EventViewState extends State<EventView> {
                       showMap();
                     });
                   },
-                  child: Icon(Icons.map),
+                  child: const Icon(Icons.map),
                 ),
               ],
             ),

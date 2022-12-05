@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'LoadingSpinner.dart';
 import 'Analytics.dart';
 import 'EventTile.dart';
 import 'EventModel.dart';
@@ -23,17 +24,17 @@ class _EventsListState extends State<EventsList> {
   @override
   void initState() {
     widget.local_storage.connect().then((value) async {
-      widget.attendingEvents = await loadEvents();
+      widget.attendingEvents = await _loadEvents();
     });
   }
 
-  Future<List<String>> loadEvents() async {
+  Future<List<String>> _loadEvents() async {
     List<Map<String, Object?>> attend =
         await widget.local_storage.getAttending();
     return attend.map((row) => row["doc_id"] as String).toList();
   }
 
-  Future<void> updateAttending(String evt_id, DocumentReference ref) async {
+  Future<void> _updateAttending(String evt_id, DocumentReference ref) async {
     String? text;
 
     if (await widget.local_storage.isAttending(evt_id)) {
@@ -53,19 +54,19 @@ class _EventsListState extends State<EventsList> {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(notif);
 
-    List<String> newEvts = await loadEvents();
+    List<String> newEvts = await _loadEvents();
 
     setState(() {
       widget.attendingEvents = newEvts;
     });
   }
 
-  void onTapAdd(BuildContext context) {
+  void _onTapAdd(BuildContext context) {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => EventForm()));
   }
 
-  void onTapAnalytics(BuildContext context) {
+  void _onTapAnalytics(BuildContext context) {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => Analytics()));
   }
@@ -73,48 +74,49 @@ class _EventsListState extends State<EventsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.events),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => onTapAdd(context),
-              icon: const Icon(Icons.add),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.events),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => _onTapAdd(context),
+            icon: const Icon(Icons.add),
+          ),
+          IconButton(
+            onPressed: () => _onTapAnalytics(context),
+            icon: const Icon(Icons.analytics),
+          )
+        ],
+      ),
+      body: StreamBuilder(
+        stream: widget.eventStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) return const LoadingSpinner();
+
+          return FutureBuilder(
+            future: _loadEvents(),
+            builder: (context, future_snapshot) => Container(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                itemCount: snapshot.data!.size,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot doc = snapshot.data!.docs[index];
+                  Map<String, dynamic> data =
+                      doc.data()! as Map<String, dynamic>;
+
+                  return EventTile(
+                    title: data["title"],
+                    location: data["location"],
+                    ref: doc.reference,
+                    attending: widget.attendingEvents.contains(doc.id),
+                    updateAttending: () =>
+                        _updateAttending(doc.id, doc.reference),
+                  );
+                },
+              ),
             ),
-            IconButton(
-              onPressed: () => onTapAnalytics(context),
-              icon: const Icon(Icons.analytics),
-            )
-          ],
-        ),
-        body: StreamBuilder(
-            stream: widget.eventStream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) {
-                return Text(AppLocalizations.of(context)!.loading);
-              }
-
-              return FutureBuilder(
-                future: loadEvents(),
-                builder: (context, future_snapshot) => Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView(
-                    children: snapshot.data!.docs.map((DocumentSnapshot doc) {
-                      Map<String, dynamic> data =
-                          doc.data()! as Map<String, dynamic>;
-
-                      return EventTile(
-                        title: data["title"],
-                        location: data["location"],
-                        ref: doc.reference,
-                        attending: widget.attendingEvents.contains(doc.id),
-                        updateAttending: () =>
-                            updateAttending(doc.id, doc.reference),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              );
-            }));
+          );
+        },
+      ),
+    );
   }
 }
