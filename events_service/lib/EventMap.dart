@@ -46,6 +46,10 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
         accuracy: LocationAccuracy.best
       ),
     ).listen(_updateLocationStream);
+
+    List<LatLng> Poly = [];
+    Poly.add(LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude));
+    Poly.add(widget.loc!);
     
     return Scaffold(
       appBar: AppBar(
@@ -72,6 +76,18 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
               TileLayerOptions(
                 urlTemplate: AppConstants.mapBoxStyleId,
               ),
+              PolylineLayerOptions(
+                polylines:[
+                    Polyline(
+                      points: Poly,
+                      // isDotted: true,
+                      color: Color(0xFF669DF6),
+                      strokeWidth: 3.0,
+                      borderColor: Color(0xFF1967D2),
+                      borderStrokeWidth: 0.0,
+                    ),
+                ],
+              ),
               MarkerLayerOptions(
                 markers: [
                   Marker(
@@ -88,12 +104,12 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
                         }
                   ),
                   Marker(
-                    point: LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude), 
+                    point: currentLocation, 
                     builder: (context){
                           return Container(
                             child: IconButton(
                               onPressed: () {},
-                              icon: Icon(Icons.location_on,
+                              icon: Icon(Icons.pin_drop,
                               color: Colors.red),
                               iconSize: 30,
                             ),
