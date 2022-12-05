@@ -47,11 +47,11 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.loc!.toString()),
+        title: Text('Where?'),
         actions: [
           IconButton(
             onPressed: () {
-                _animatedMapMove(currentLocation, 13);
+                _animatedMapMove(currentLocation, 16);
             }, 
             icon: Icon(Icons.gps_fixed))
         ],
@@ -62,8 +62,8 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
             mapController: mapController,
             options: MapOptions(
               minZoom: 5,
-              maxZoom: 18,
-              zoom: 13,
+              maxZoom: 20,
+              zoom: 16,
               center: widget.loc,
             ),
             layers: [
