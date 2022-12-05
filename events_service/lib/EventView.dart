@@ -53,13 +53,28 @@ class _EventViewState extends State<EventView> {
     return;
   }
 
+  void geocode(address) async {
+    final List<Location> locations = await locationFromAddress(address);
+    setState(() {
+      send_loc = LatLng(locations[0].latitude, locations[0].longitude);
+    });
+  }
+
+  showMap() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => EventMap(
+              loc: send_loc,
+            )));
+  }
+
   void onEdit(BuildContext context) async {
     await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => EventForm(
-              ref: widget.ref,
-            )));
+                  ref: widget.ref,
+                )));
     await retrieveData();
     setState(() {});
   }
@@ -67,46 +82,36 @@ class _EventViewState extends State<EventView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => onEdit(context),
-              icon: const Icon(Icons.edit),
-            ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: retrieveData(),
-          builder: ((context, snapshot) {
-            // if (!snapshot.hasData) return const Text("Loading...");
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => onEdit(context),
+            icon: const Icon(Icons.edit),
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: retrieveData(),
+        builder: ((context, snapshot) {
+          // if (!snapshot.hasData) return const Text("Loading...");
 
-            return Padding(
-              padding: const EdgeInsets.all(4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    AppLocalizations.of(context)!.when,
-                    style: widget.labelStyle,
+          return Padding(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  AppLocalizations.of(context)!.when,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(
+                    //date?.toString() ?? "",
+                    "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 12),
-                    child: Text(
-                      //date?.toString() ?? "",
-                      "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
-                    ),
-                    // TODO: pretty date, calendar?
-                  ),
-
-                  Text(
-                    AppLocalizations.of(context)!.where,
-                    style: widget.labelStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 12),
-                    child: Text(location ?? ""),
-                  ),
+<<<<<<< HEAD
 
                   Text(
                     AppLocalizations.of(context)!.what,
@@ -150,6 +155,40 @@ class _EventViewState extends State<EventView> {
         loc: send_loc,
         current_loc: current_loc,
       ))
+=======
+                  // TODO: pretty date, calendar?
+                ),
+                Text(
+                  AppLocalizations.of(context)!.where,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(location ?? ""),
+                ),
+                Text(
+                  AppLocalizations.of(context)!.what,
+                  style: widget.labelStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 12),
+                  child: Text(description ?? ""),
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    geocode(location);
+                    setState(() {
+                      showMap();
+                    });
+                  },
+                  child: Icon(Icons.map),
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+>>>>>>> 36f2e7354b71fd9a5fa023fb3d910778533b745a
     );
   }
 }
