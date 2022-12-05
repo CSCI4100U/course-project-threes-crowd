@@ -30,5 +30,7 @@
     "notifications": "Notifications",
     "welcome": "Bienvenue !",
     "schedule": "Voyons ce que vous avez prévu",
-    "channelDesc": "Actuellement, il ne s'agit que d'un accueil, mais bientôt, il contiendra des rappels programmés !"
+    "channelDesc": "Actuellement, il ne s'agit que d'un accueil, mais bientôt, il contiendra des rappels programmés !",
+
+    "attendenceCap": "Plafond d'assiduité"
 }

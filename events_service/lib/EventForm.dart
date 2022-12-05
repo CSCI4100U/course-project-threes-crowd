@@ -15,6 +15,7 @@ class EventForm extends StatefulWidget {
         descController.text = snapshot['description'];
         titleController.text = snapshot['title'];
         locationController.text = snapshot['location'];
+        attendenceCapController.text = snapshot['attendenceCap'].toString();
         dateStart = DateTime.parse(snapshot['start']);
         dateEnd = DateTime.parse(snapshot['end']);
       });
@@ -27,6 +28,7 @@ class EventForm extends StatefulWidget {
   final descController = TextEditingController();
   final titleController = TextEditingController();
   final locationController = TextEditingController();
+  final attendenceCapController = TextEditingController();
   DateTime dateStart = DateTime.now();
   DateTime dateEnd = DateTime.now();
 
@@ -55,6 +57,7 @@ class _EventFormState extends State<EventForm> {
   }
 
   Future<void> submitData() async {
+    print(widget.attendenceCapController.text);
     if (widget.ref == null) {
       // creating
       widget.db.addEvent(
@@ -63,16 +66,19 @@ class _EventFormState extends State<EventForm> {
         widget.descController.text,
         _start,
         _end,
+        int.tryParse(widget.attendenceCapController.text) ?? 0,
       );
     } else {
       // editing
       await widget.db.editEvent(
-          widget.ref!,
-          widget.titleController.text,
-          widget.locationController.text,
-          widget.descController.text,
-          _start,
-          _end);
+        widget.ref!,
+        widget.titleController.text,
+        widget.locationController.text,
+        widget.descController.text,
+        _start,
+        _end,
+        int.tryParse(widget.attendenceCapController.text) ?? 0,
+      );
     }
 
     SnackBar notif = SnackBar(
@@ -97,6 +103,13 @@ class _EventFormState extends State<EventForm> {
               controller: widget.titleController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.editTitle,
+              ),
+            ),
+            TextField(
+              controller: widget.attendenceCapController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.attendenceCap,
               ),
             ),
             TextField(
