@@ -30,8 +30,8 @@ class EventForm extends StatefulWidget {
   final descController = TextEditingController();
   final titleController = TextEditingController();
   final locationController = TextEditingController();
-  DateTime dateStart = DateTime.parse("20221201");
-  DateTime dateEnd = DateTime.parse("20221201");
+  DateTime dateStart = DateTime.now();
+  DateTime dateEnd = DateTime.now();
 
   @override
   State<EventForm> createState() => _EventFormState();
@@ -67,32 +67,45 @@ class _EventFormState extends State<EventForm> {
   }
 
   Future<void> submitData() async {
-    if (widget.ref == null) {
-      // creating
-      widget.db.addEvent(
-        widget.titleController.text,
-        widget.locationController.text,
-        widget.descController.text,
-        _start,
-        _end,
+
+    if ((DateTime.tryParse(_end) ?? DateTime.now()).isBefore(
+        DateTime.tryParse(_start) ?? DateTime.now())) {
+      // If the event end is before the start, block the save and show an error in the snackbar
+      SnackBar notif = SnackBar(
+        content: Text(
+            AppLocalizations.of(context)!.timeConflict),
       );
+
+      ScaffoldMessenger.of(context).showSnackBar(notif);
+
     } else {
-      // editing
-      await widget.db.editEvent(
-          widget.ref!,
+      if (widget.ref == null) {
+        // creating
+        widget.db.addEvent(
           widget.titleController.text,
           widget.locationController.text,
           widget.descController.text,
           _start,
-          _end);
+          _end,
+        );
+      } else {
+        // editing
+        await widget.db.editEvent(
+            widget.ref!,
+            widget.titleController.text,
+            widget.locationController.text,
+            widget.descController.text,
+            _start,
+            _end);
+      }
+
+      SnackBar notif = SnackBar(
+        content: Text(
+            "${AppLocalizations.of(context)!.eventSaved1} ${widget.titleController.text} ${AppLocalizations.of(context)!.eventSaved2}"),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(notif);
     }
-
-    SnackBar notif = SnackBar(
-      content: Text(
-          "${AppLocalizations.of(context)!.eventSaved1} ${widget.titleController.text} ${AppLocalizations.of(context)!.eventSaved2}"),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(notif);
   }
 
   void setTimeFromPrompt(BuildContext context, bool isStart) async {

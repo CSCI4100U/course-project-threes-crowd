@@ -19,6 +19,7 @@
     "eventSaved2": "sauvegarde",
     "startTime": "Heure de début:",
     "endTime": "Heure de fin:",
+    "timeConflict": "Erreur : L'heure de fin de l'événement ne peut pas être antérieure à l'heure de début de l'événement.",
 
     "appDesc": "Une application d'enregistrement des événements",
     "about": "À propos de",
