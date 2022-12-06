@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class EventView extends StatefulWidget {
   const EventView({
@@ -37,6 +38,7 @@ class _EventViewState extends State<EventView> {
   int? attendenceCap;
   DateTimeRange? date;
   LatLng? send_loc;
+  Position? current_loc;
 
   Future<void> retrieveData() async {
     DocumentSnapshot data = await widget.ref.get();
@@ -59,16 +61,19 @@ class _EventViewState extends State<EventView> {
 
   Future<void> geocode(String address) async {
     final List<Location> locations = await locationFromAddress(address);
+    current_loc = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
     setState(() {
       send_loc = LatLng(locations[0].latitude, locations[0].longitude);
     });
   }
 
   Future<void> showMap() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 1000));
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => EventMap(
               loc: send_loc,
+              current_loc: current_loc,
             )));
   }
 

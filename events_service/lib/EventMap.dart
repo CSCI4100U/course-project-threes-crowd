@@ -8,46 +8,59 @@ import 'package:geocoding/geocoding.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EventMap extends StatefulWidget {
-  EventMap({Key? key, this.loc}) : super(key: key);
+  EventMap({Key? key, this.loc, this.current_loc}) : super(key: key);
 
   LatLng? loc;
+  Position? current_loc;
 
   @override
   State<EventMap> createState() => _EventMapState();
 }
 
-class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
-  var currentLocation = AppConstants.myLocation;
+class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
+
+  var currentLocation;
 
   late MapController mapController;
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     mapController = MapController();
   }
 
   @override
   Widget build(BuildContext context) {
+    currentLocation = LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
+
     Geolocator.isLocationServiceEnabled().then((value) => null);
     Geolocator.requestPermission().then((value) => null);
-    Geolocator.checkPermission().then((LocationPermission permission) {
-      print("Check Location Permission: $permission");
-    });
+    Geolocator.checkPermission().then(
+            (LocationPermission permission)
+        {
+          print("Check Location Permission: $permission");
+        }
+    );
 
     Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.best),
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.best
+      ),
     ).listen(_updateLocationStream);
 
+    List<LatLng> Poly = [];
+    Poly.add(LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude));
+    Poly.add(widget.loc!);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.where),
         actions: [
           IconButton(
-              onPressed: () {
-                _animatedMapMove(currentLocation, 13);
-              },
-              icon: const Icon(Icons.gps_fixed))
+            onPressed: () {
+                _animatedMapMove(currentLocation, 16);
+            }, 
+            icon: Icon(Icons.gps_fixed))
         ],
       ),
       body: Stack(
@@ -64,22 +77,48 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
               TileLayerOptions(
                 urlTemplate: AppConstants.mapBoxStyleId,
               ),
-              MarkerLayerOptions(markers: [
-                Marker(
-                    point: widget.loc!,
-                    builder: (context) {
-                      return Container(
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.location_on,
-                            color: Colors.blue,
-                          ),
-                          iconSize: 30,
-                        ),
-                      );
-                    })
-              ])
+              PolylineLayerOptions(
+                polylines:[
+                    Polyline(
+                      points: Poly,
+                      // isDotted: true,
+                      color: Color(0xFF669DF6),
+                      strokeWidth: 3.0,
+                      borderColor: Color(0xFF1967D2),
+                      borderStrokeWidth: 0.0,
+                    ),
+                ],
+              ),
+              MarkerLayerOptions(
+                markers: [
+                  Marker(
+                    point: widget.loc!, 
+                    builder: (context){
+                          return Container(
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.location_on,
+                              color: Colors.blue),
+                              iconSize: 30,
+                            ),
+                          );
+                        }
+                  ),
+                  Marker(
+                    point: currentLocation, 
+                    builder: (context){
+                          return Container(
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.pin_drop,
+                              color: Colors.red),
+                              iconSize: 30,
+                            ),
+                          );
+                        }
+                  ),
+                ]
+              )
             ],
           ),
         ],
@@ -87,8 +126,9 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
     );
   }
 
-  _updateLocationStream(Position userLocation) async {
-    currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
+  _updateLocationStream(Position userLocation) async{
+    
+      currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
@@ -106,7 +146,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
     // The animation determines what path the animation will take. You can try different Curves values, although I found
     // fastOutSlowIn to be my favorite.
     Animation<double> animation =
-        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+    CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
 
     controller.addListener(() {
       mapController.move(
@@ -125,4 +165,5 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
 
     controller.forward();
   }
+
 }
