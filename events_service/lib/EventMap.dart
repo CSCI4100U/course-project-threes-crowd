@@ -11,9 +11,11 @@ class EventMap extends StatefulWidget {
   EventMap({
     Key? key,
     this.loc,
+    this.current_loc
   }) : super(key: key);
 
   LatLng? loc;
+  Position? current_loc;
 
   @override
   State<EventMap> createState() => _EventMapState();
@@ -43,7 +45,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
     ).listen(_updateLocationStream);
 
     List<LatLng> Poly = [];
-    Poly.add(currentLocation ?? AppConstants.myLocation);
+    Poly.add(currentLocation ?? LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude));
     Poly.add(widget.loc!);
 
 
@@ -56,7 +58,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
         child: const Icon(Icons.gps_fixed),
         onPressed: () {
           setState(() {
-            Poly[0] = currentLocation ?? AppConstants.myLocation;
+            Poly[0] = currentLocation ?? LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
           });
           _animatedMapMove(currentLocation, 16);
         },
@@ -89,7 +91,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
               ),
               MarkerLayerOptions(markers: [
                 Marker(
-                    point: currentLocation ?? AppConstants.myLocation,
+                    point: currentLocation ?? LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude),
                     builder: (context) {
                       return Container(
                         child: IconButton(
@@ -122,10 +124,9 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
   _updateLocationStream(Position userLocation) async {
     if(mounted){
       setState(() {
-        
+        currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
       });
     }
-    currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
