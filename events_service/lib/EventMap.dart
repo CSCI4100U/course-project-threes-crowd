@@ -46,6 +46,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
     Poly.add(currentLocation ?? AppConstants.myLocation);
     Poly.add(widget.loc!);
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.where),
@@ -119,10 +120,12 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
   }
 
   _updateLocationStream(Position userLocation) async {
+    if(mounted){
+      setState(() {
+        
+      });
+    }
     currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
-    setState(() {
-      
-    });
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
