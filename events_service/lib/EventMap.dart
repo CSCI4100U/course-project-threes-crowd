@@ -120,6 +120,9 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
 
   _updateLocationStream(Position userLocation) async {
     currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
+    setState(() {
+      
+    });
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
