@@ -15,9 +15,12 @@ class EventForm extends StatefulWidget {
         descController.text = snapshot['description'];
         titleController.text = snapshot['title'];
         locationController.text = snapshot['location'];
-        dateStart = DateTime.parse(snapshot['start']);
-        dateEnd = DateTime.parse(snapshot['end']);
+        dateStart = DateTime.tryParse(snapshot['start']) ?? DateTime.now();
+        dateEnd = DateTime.tryParse(snapshot['end']) ?? DateTime.now();
       });
+    } else {
+      dateStart = DateTime.now();
+      dateEnd = DateTime.now();
     }
   }
 
@@ -39,14 +42,23 @@ class _EventFormState extends State<EventForm> {
   String _start = '';
   String _end = '';
 
+  @override
+  void initState() {
+    _start = DateFormat('yyyy-MM-dd HHmm').format(widget.dateStart);
+    _end = DateFormat('yyyy-MM-dd HHmm').format(widget.dateEnd);
+    super.initState();
+  }
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() {
       if (args.value is PickerDateRange) {
         _start =
-            DateFormat('yyyy-MM-dd').format(args.value.startDate).toString();
+            DateFormat('yyyy-MM-dd').format(args.value.startDate).toString()
+            + _start.substring(10);
         _end = DateFormat('yyyy-MM-dd')
             .format(args.value.endDate ?? args.value.startDate)
-            .toString();
+            .toString()
+            + _end.substring(10);
       } else if (args.value is DateTime) {
       } else if (args.value is List<DateTime>) {
         _dateCount = args.value.length.toString();
@@ -55,32 +67,81 @@ class _EventFormState extends State<EventForm> {
   }
 
   Future<void> submitData() async {
-    if (widget.ref == null) {
-      // creating
-      widget.db.addEvent(
-        widget.titleController.text,
-        widget.locationController.text,
-        widget.descController.text,
-        _start,
-        _end,
+
+    if ((DateTime.tryParse(_end) ?? DateTime.now()).isBefore(
+        DateTime.tryParse(_start) ?? DateTime.now())) {
+      // If the event end is before the start, block the save and show an error in the snackbar
+      SnackBar notif = SnackBar(
+        content: Text(
+            AppLocalizations.of(context)!.timeConflict),
       );
+
+      ScaffoldMessenger.of(context).showSnackBar(notif);
+
     } else {
-      // editing
-      await widget.db.editEvent(
-          widget.ref!,
+      if (widget.ref == null) {
+        // creating
+        widget.db.addEvent(
           widget.titleController.text,
           widget.locationController.text,
           widget.descController.text,
           _start,
-          _end);
+          _end,
+        );
+      } else {
+        // editing
+        await widget.db.editEvent(
+            widget.ref!,
+            widget.titleController.text,
+            widget.locationController.text,
+            widget.descController.text,
+            _start,
+            _end);
+      }
+
+      SnackBar notif = SnackBar(
+        content: Text(
+            "${AppLocalizations.of(context)!.eventSaved1} ${widget.titleController.text} ${AppLocalizations.of(context)!.eventSaved2}"),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(notif);
+    }
+  }
+
+  void setTimeFromPrompt(BuildContext context, bool isStart) async {
+    // Sets _start or _end to a time selected by a time picker
+    String initial;
+
+    if (isStart) {
+      initial = _start;
+    } else {
+      initial = _end;
     }
 
-    SnackBar notif = SnackBar(
-      content: Text(
-          "${AppLocalizations.of(context)!.eventSaved1} ${widget.titleController.text} ${AppLocalizations.of(context)!.eventSaved2}"),
+    TimeOfDay? result = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(DateTime.tryParse(initial) ?? DateTime.now())
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(notif);
+    setState(() {
+      if (result != null) {
+        if (isStart) {
+          _start = DateFormat('yyyy-MM-dd HHmm').format(
+              DateTime.tryParse("${_start.substring(0,11)}"
+                  "${(result.hour / 10).floor()}${result.hour % 10}"
+                  "${(result.minute / 10).floor()}${result.minute % 10}"
+              )
+                  ?? DateTime.now());
+        } else {
+          _end = DateFormat('yyyy-MM-dd HHmm').format(
+              DateTime.tryParse("${_end.substring(0,11)}"
+                  "${(result.hour / 10).floor()}${result.hour % 10}"
+                  "${(result.minute / 10).floor()}${result.minute % 10}"
+              )
+                  ?? DateTime.now());
+        }
+      }
+    });
   }
 
   @override
@@ -89,40 +150,63 @@ class _EventFormState extends State<EventForm> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.editEvent),
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: widget.titleController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editTitle,
-              ),
+        children: <Widget>[
+          TextField(
+            controller: widget.titleController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editTitle,
             ),
-            TextField(
-              controller: widget.locationController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editLocation,
-              ),
+          ),
+          TextField(
+            controller: widget.locationController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editLocation,
             ),
-            TextField(
-              controller: widget.descController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.editDesc,
-              ),
+          ),
+          TextField(
+            controller: widget.descController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.editDesc,
             ),
-            Text(AppLocalizations.of(context)!.editDate),
-            SfDateRangePicker(
-              onSelectionChanged: _onSelectionChanged,
-              selectionMode: DateRangePickerSelectionMode.range,
-              initialSelectedRange: PickerDateRange(
-                widget.dateStart,
-                widget.dateEnd,
-              ),
+          ),
+          Text(AppLocalizations.of(context)!.editDate),
+          SfDateRangePicker(
+            onSelectionChanged: _onSelectionChanged,
+            selectionMode: DateRangePickerSelectionMode.range,
+            initialSelectedRange: PickerDateRange(
+              widget.dateStart,
+              widget.dateEnd,
             ),
-          ],
-        ),
+          ),
+
+          // Time selection grid
+          Row (
+            children: <Widget>[
+              Column (
+                children: <Widget>[
+                  Text(AppLocalizations.of(context)!.startTime),
+                  TextButton(
+                      onPressed: () => {setTimeFromPrompt(context, true)},
+                      child: Text(DateFormat.jm().format(DateTime.tryParse(_start) ?? DateTime.now()))
+                  )
+                ],
+              ),
+              Column (
+                children: <Widget>[
+                  Text(AppLocalizations.of(context)!.endTime),
+                  TextButton(
+                      onPressed: () => {setTimeFromPrompt(context, false)},
+                      child: Text(DateFormat.jm().format(DateTime.tryParse(_end) ?? DateTime.now()))
+                  )
+                ],
+              )
+            ],
+          ),
+
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => submitData(),
@@ -132,3 +216,4 @@ class _EventFormState extends State<EventForm> {
     );
   }
 }
+

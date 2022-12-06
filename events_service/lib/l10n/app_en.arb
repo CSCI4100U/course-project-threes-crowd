@@ -17,6 +17,9 @@
     "editDate": "Date",
     "eventSaved1": "Event",
     "eventSaved2": "Saved",
+    "startTime": "Start time:",
+    "endTime": "End time:",
+    "timeConflict": "Error: Event end time cannot be before event start time.",
 
     "appDesc": "An events Registration app",
     "about": "About",
