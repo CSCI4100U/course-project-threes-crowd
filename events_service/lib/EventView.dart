@@ -44,6 +44,9 @@ class _EventViewState extends State<EventView> {
     // title = data.get("title");
     Map<String, dynamic> fields = data.data() as Map<String, dynamic>;
 
+    // check widget is in tree
+    if (!mounted) return;
+
     setState(() {
       location = fields["location"];
       description = fields["description"];
@@ -61,14 +64,13 @@ class _EventViewState extends State<EventView> {
   Future<void> geocode(String address) async {
     final List<Location> locations = await locationFromAddress(address);
     //current_loc = await Geolocator.getCurrentPosition(
-        //desiredAccuracy: LocationAccuracy.best);
+    //desiredAccuracy: LocationAccuracy.best);
     send_loc = LatLng(locations[0].latitude, locations[0].longitude);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => EventMap(
               loc: send_loc,
             )));
   }
-
 
   Future<void> onEdit(BuildContext context) async {
     await Navigator.push(
@@ -78,7 +80,6 @@ class _EventViewState extends State<EventView> {
                   ref: widget.ref,
                 )));
     await retrieveData();
-    setState(() {});
   }
 
   Widget buildAttendanceGraph(BuildContext context) {
