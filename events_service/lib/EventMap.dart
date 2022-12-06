@@ -8,10 +8,9 @@ import 'package:geocoding/geocoding.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EventMap extends StatefulWidget {
-  EventMap({Key? key, this.loc, this.current_loc}) : super(key: key);
+  EventMap({Key? key, this.loc}) : super(key: key);
 
   LatLng? loc;
-  Position? current_loc;
 
   @override
   State<EventMap> createState() => _EventMapState();
@@ -31,7 +30,6 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    currentLocation = LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
 
     Geolocator.isLocationServiceEnabled().then((value) => null);
     Geolocator.requestPermission().then((value) => null);
@@ -49,7 +47,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     ).listen(_updateLocationStream);
 
     List<LatLng> Poly = [];
-    Poly.add(LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude));
+    Poly.add(currentLocation ?? AppConstants.myLocation);
     Poly.add(widget.loc!);
     
     return Scaffold(
@@ -58,7 +56,10 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
         actions: [
           IconButton(
             onPressed: () {
-                _animatedMapMove(currentLocation, 16);
+              setState(() {
+                Poly[0] = currentLocation;
+              });
+              _animatedMapMove(currentLocation, 16);
             }, 
             icon: Icon(Icons.gps_fixed))
         ],
@@ -91,32 +92,34 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
               ),
               MarkerLayerOptions(
                 markers: [
-                  Marker(
-                    point: widget.loc!, 
-                    builder: (context){
+                      Marker(
+                        point: currentLocation ?? AppConstants.myLocation,
+                        builder: (context){
                           return Container(
                             child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.location_on,
-                              color: Colors.blue),
-                              iconSize: 30,
-                            ),
-                          );
-                        }
-                  ),
-                  Marker(
-                    point: currentLocation, 
-                    builder: (context){
-                          return Container(
-                            child: IconButton(
-                              onPressed: () {},
+                              onPressed: (){
+
+                              },
                               icon: Icon(Icons.pin_drop,
                               color: Colors.red),
                               iconSize: 30,
                             ),
                           );
                         }
-                  ),
+                      ),
+                      Marker(
+                        point: widget.loc!, 
+                        builder: (context){
+                              return Container(
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.location_on,
+                                  color: Colors.blue),
+                                  iconSize: 30,
+                                ),
+                              );
+                            }
+                      ),
                 ]
               )
             ],
@@ -127,8 +130,9 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
   }
 
   _updateLocationStream(Position userLocation) async{
-    
-      currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
+      setState(() {
+        currentLocation = LatLng(userLocation.latitude, userLocation.longitude);
+      });
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
