@@ -17,6 +17,8 @@
     "editDate": "Fecha",
     "eventSaved1": "Evento",
     "eventSaved2": "guardado",
+    "startTime": "Hora de inicio:",
+    "endTime": "Hora de finalización:",
 
     "appDesc": "Una aplicación de registro de eventos",
     "about": "Acerca de",

@@ -17,6 +17,8 @@
     "editDate": "Date",
     "eventSaved1": "Event",
     "eventSaved2": "Saved",
+    "startTime": "Start time:",
+    "endTime": "End time:",
 
     "appDesc": "An events Registration app",
     "about": "About",

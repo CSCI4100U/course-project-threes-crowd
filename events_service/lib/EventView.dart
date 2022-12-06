@@ -116,7 +116,8 @@ class _EventViewState extends State<EventView> {
               ),
             );
           }),
-        ));
+        )
+    );
   }
 }
 

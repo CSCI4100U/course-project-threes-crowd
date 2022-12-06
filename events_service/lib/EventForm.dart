@@ -15,9 +15,12 @@ class EventForm extends StatefulWidget {
         descController.text = snapshot['description'];
         titleController.text = snapshot['title'];
         locationController.text = snapshot['location'];
-        dateStart = DateTime.parse(snapshot['start']);
-        dateEnd = DateTime.parse(snapshot['end']);
+        dateStart = DateTime.tryParse(snapshot['start']) ?? DateTime.now();
+        dateEnd = DateTime.tryParse(snapshot['end']) ?? DateTime.now();
       });
+    } else {
+      dateStart = DateTime.now();
+      dateEnd = DateTime.now();
     }
   }
 
@@ -27,8 +30,8 @@ class EventForm extends StatefulWidget {
   final descController = TextEditingController();
   final titleController = TextEditingController();
   final locationController = TextEditingController();
-  DateTime dateStart = DateTime.now();
-  DateTime dateEnd = DateTime.now();
+  DateTime dateStart = DateTime.parse("20221201");
+  DateTime dateEnd = DateTime.parse("20221201");
 
   @override
   State<EventForm> createState() => _EventFormState();
@@ -39,14 +42,23 @@ class _EventFormState extends State<EventForm> {
   String _start = '';
   String _end = '';
 
+  @override
+  void initState() {
+    _start = DateFormat('yyyy-MM-dd HHmm').format(widget.dateStart);
+    _end = DateFormat('yyyy-MM-dd HHmm').format(widget.dateEnd);
+    super.initState();
+  }
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() {
       if (args.value is PickerDateRange) {
         _start =
-            DateFormat('yyyy-MM-dd').format(args.value.startDate).toString();
+            DateFormat('yyyy-MM-dd').format(args.value.startDate).toString()
+            + _start.substring(10);
         _end = DateFormat('yyyy-MM-dd')
             .format(args.value.endDate ?? args.value.startDate)
-            .toString();
+            .toString()
+            + _end.substring(10);
       } else if (args.value is DateTime) {
       } else if (args.value is List<DateTime>) {
         _dateCount = args.value.length.toString();
@@ -81,6 +93,42 @@ class _EventFormState extends State<EventForm> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(notif);
+  }
+
+  void setTimeFromPrompt(BuildContext context, bool isStart) async {
+    // Sets _start or _end to a time selected by a time picker
+    String initial;
+
+    if (isStart) {
+      initial = _start;
+    } else {
+      initial = _end;
+    }
+
+    TimeOfDay? result = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(DateTime.tryParse(initial) ?? DateTime.now())
+    );
+
+    setState(() {
+      if (result != null) {
+        if (isStart) {
+          _start = DateFormat('yyyy-MM-dd HHmm').format(
+              DateTime.tryParse("${_start.substring(0,11)}"
+                  "${(result.hour / 10).floor()}${result.hour % 10}"
+                  "${(result.minute / 10).floor()}${result.minute % 10}"
+              )
+                  ?? DateTime.now());
+        } else {
+          _end = DateFormat('yyyy-MM-dd HHmm').format(
+              DateTime.tryParse("${_end.substring(0,11)}"
+                  "${(result.hour / 10).floor()}${result.hour % 10}"
+                  "${(result.minute / 10).floor()}${result.minute % 10}"
+              )
+                  ?? DateTime.now());
+        }
+      }
+    });
   }
 
   @override
@@ -120,6 +168,31 @@ class _EventFormState extends State<EventForm> {
               widget.dateEnd,
             ),
           ),
+
+          // Time selection grid
+          Row (
+            children: <Widget>[
+              Column (
+                children: <Widget>[
+                  Text(AppLocalizations.of(context)!.startTime),
+                  TextButton(
+                      onPressed: () => {setTimeFromPrompt(context, true)},
+                      child: Text(DateFormat.jm().format(DateTime.tryParse(_start) ?? DateTime.now()))
+                  )
+                ],
+              ),
+              Column (
+                children: <Widget>[
+                  Text(AppLocalizations.of(context)!.endTime),
+                  TextButton(
+                      onPressed: () => {setTimeFromPrompt(context, false)},
+                      child: Text(DateFormat.jm().format(DateTime.tryParse(_end) ?? DateTime.now()))
+                  )
+                ],
+              )
+            ],
+          ),
+
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -130,3 +203,4 @@ class _EventFormState extends State<EventForm> {
     );
   }
 }
+
