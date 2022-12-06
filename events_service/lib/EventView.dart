@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:events_service/EventMap.dart';
 import 'package:events_service/LoadingSpinner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
 
 class EventView extends StatefulWidget {
-  EventView({
+  const EventView({
     super.key,
     required this.title,
     required this.ref,
@@ -32,34 +33,38 @@ class EventView extends StatefulWidget {
 class _EventViewState extends State<EventView> {
   String? location;
   String? description;
+  int? attendence;
+  int? attendenceCap;
   DateTimeRange? date;
   LatLng? send_loc;
 
-  Future retrieveData() async {
+  Future<void> retrieveData() async {
     DocumentSnapshot data = await widget.ref.get();
     // title = data.get("title");
     Map<String, dynamic> fields = data.data() as Map<String, dynamic>;
 
-    location = fields["location"];
-    description = fields["description"];
-    DateTime start = DateTime.parse(fields['start']);
-    DateTime end = DateTime.parse(fields['end']);
-    date = DateTimeRange(
-      start: start,
-      end: end,
-    );
-
-    return;
+    setState(() {
+      location = fields["location"];
+      description = fields["description"];
+      attendence = fields["attendence"];
+      attendenceCap = fields["attendenceCap"];
+      DateTime start = DateTime.parse(fields['start']);
+      DateTime end = DateTime.parse(fields['end']);
+      date = DateTimeRange(
+        start: start,
+        end: end,
+      );
+    });
   }
 
-  void geocode(address) async {
+  Future<void> geocode(String address) async {
     final List<Location> locations = await locationFromAddress(address);
     setState(() {
       send_loc = LatLng(locations[0].latitude, locations[0].longitude);
     });
   }
 
-  showMap() async {
+  Future<void> showMap() async {
     await Future.delayed(const Duration(milliseconds: 500));
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => EventMap(
@@ -67,7 +72,7 @@ class _EventViewState extends State<EventView> {
             )));
   }
 
-  void onEdit(BuildContext context) async {
+  Future<void> onEdit(BuildContext context) async {
     await Navigator.push(
         context,
         MaterialPageRoute(
@@ -76,6 +81,34 @@ class _EventViewState extends State<EventView> {
                 )));
     await retrieveData();
     setState(() {});
+  }
+
+  Widget buildAttendanceGraph(BuildContext context) {
+    return charts.BarChart(
+      [
+        charts.Series<int, String>(
+          id: AppLocalizations.of(context)!.attendence,
+          domainFn: (datum, index) => AppLocalizations.of(context)!.attendence,
+          measureFn: (datum, index) => datum,
+          data: [attendence ?? 0],
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          fillColorFn: (_, __) =>
+              charts.MaterialPalette.blue.shadeDefault.lighter,
+        ),
+        charts.Series<int, String>(
+          id: AppLocalizations.of(context)!.attendenceCap,
+          domainFn: (datum, index) =>
+              AppLocalizations.of(context)!.attendenceCap,
+          measureFn: (datum, index) => datum,
+          data: [attendenceCap ?? 0],
+          colorFn: (_, __) => charts.MaterialPalette.gray.shadeDefault,
+          fillColorFn: (_, __) =>
+              charts.MaterialPalette.gray.shadeDefault.lighter,
+        ),
+      ],
+      animate: false,
+      vertical: false,
+    );
   }
 
   @override
@@ -93,51 +126,60 @@ class _EventViewState extends State<EventView> {
       body: FutureBuilder(
         future: retrieveData(),
         builder: ((context, snapshot) {
-          if (!snapshot.hasData) return const LoadingSpinner();
+          // if (!snapshot.hasData) return const LoadingSpinner();
 
-          return Padding(
-            padding: const EdgeInsets.all(4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  AppLocalizations.of(context)!.when,
-                  style: widget.labelStyle,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 12),
-                  child: Text(
-                    //date?.toString() ?? "",
-                    "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
+          return LayoutBuilder(
+            builder: (context, constraints) => Container(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              padding: const EdgeInsets.all(4),
+              child: ListView(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: constraints.maxWidth / 4,
+                    height: constraints.maxHeight / 4,
+                    child: buildAttendanceGraph(context),
                   ),
-                  // TODO: pretty date, calendar?
-                ),
-                Text(
-                  AppLocalizations.of(context)!.where,
-                  style: widget.labelStyle,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 12),
-                  child: Text(location ?? ""),
-                ),
-                Text(
-                  AppLocalizations.of(context)!.what,
-                  style: widget.labelStyle,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 12),
-                  child: Text(description ?? ""),
-                ),
-                FloatingActionButton(
-                  onPressed: () {
-                    geocode(location);
-                    setState(() {
-                      showMap();
-                    });
-                  },
-                  child: const Icon(Icons.map),
-                ),
-              ],
+                  Text(
+                    AppLocalizations.of(context)!.when,
+                    style: widget.labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(
+                      //date?.toString() ?? "",
+                      "${prettifyDate(date?.start)} - ${prettifyDate(date?.end)}",
+                    ),
+                    // TODO: pretty date, calendar?
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.where,
+                    style: widget.labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(location ?? ""),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.what,
+                    style: widget.labelStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 12),
+                    child: Text(description ?? ""),
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      geocode(location ?? '');
+                      setState(() {
+                        showMap();
+                      });
+                    },
+                    child: const Icon(Icons.map),
+                  ),
+                ],
+              ),
             ),
           );
         }),
