@@ -44,6 +44,8 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.best),
     ).listen(_updateLocationStream);
 
+    //currentLocation = LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
+
     List<LatLng> Poly = [];
     Poly.add(currentLocation ?? LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude));
     Poly.add(widget.loc!);
@@ -60,7 +62,7 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
           setState(() {
             Poly[0] = currentLocation ?? LatLng(widget.current_loc!.latitude, widget.current_loc!.longitude);
           });
-          _animatedMapMove(currentLocation, 16);
+          _animatedMapMove(Poly[0], 16);
         },
       ),
       body: Stack(
