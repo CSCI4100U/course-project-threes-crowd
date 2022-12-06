@@ -53,16 +53,16 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin{
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.where),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                Poly[0] = currentLocation;
+        actions: [],
+      ),
+      floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.gps_fixed),
+                onPressed: (){
+                  setState(() {
+                Poly[0] = currentLocation ?? AppConstants.myLocation;
               });
               _animatedMapMove(currentLocation, 16);
-            }, 
-            icon: Icon(Icons.gps_fixed))
-        ],
+          },
       ),
       body: Stack(
         children: [
