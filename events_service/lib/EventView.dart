@@ -62,19 +62,13 @@ class _EventViewState extends State<EventView> {
     final List<Location> locations = await locationFromAddress(address);
     //current_loc = await Geolocator.getCurrentPosition(
         //desiredAccuracy: LocationAccuracy.best);
-        setState(() {
-          send_loc = LatLng(locations[0].latitude, locations[0].longitude);
-        });
-      
-  }
-
-  Future<void> showMap() async {
-    await Future.delayed(Duration(milliseconds: 1500));
+    send_loc = LatLng(locations[0].latitude, locations[0].longitude);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => EventMap(
               loc: send_loc,
             )));
   }
+
 
   Future<void> onEdit(BuildContext context) async {
     await Navigator.push(
@@ -176,9 +170,6 @@ class _EventViewState extends State<EventView> {
                   FloatingActionButton(
                     onPressed: () {
                       geocode(location ?? '');
-                      setState(() {
-                        showMap();
-                      });
                     },
                     child: const Icon(Icons.map),
                   ),
