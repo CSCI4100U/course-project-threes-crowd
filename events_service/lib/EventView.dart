@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:events_service/EventMap.dart';
+import 'package:events_service/LoadingSpinner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:events_service/EventForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +13,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class EventView extends StatefulWidget {
-  EventView({
+  const EventView({
     super.key,
     required this.title,
     required this.ref,
@@ -32,60 +34,118 @@ class EventView extends StatefulWidget {
 class _EventViewState extends State<EventView> {
   String? location;
   String? description;
+  int? attendence;
+  int? attendenceCap;
   DateTimeRange? date;
   LatLng? send_loc;
   Position? current_loc;
 
-  Future retrieveData() async {
+  Future<void> retrieveData() async {
     DocumentSnapshot data = await widget.ref.get();
     // title = data.get("title");
     Map<String, dynamic> fields = data.data() as Map<String, dynamic>;
 
-    location = fields["location"];
-    description = fields["description"];
-    DateTime start = DateTime.parse(fields['start']);
-    DateTime end = DateTime.parse(fields['end']);
-    date = DateTimeRange(
-      start: start,
-      end: end,
-    );
-
-    return;
+    setState(() {
+      location = fields["location"];
+      description = fields["description"];
+      attendence = fields["attendence"];
+      attendenceCap = fields["attendenceCap"];
+      DateTime start = DateTime.parse(fields['start']);
+      DateTime end = DateTime.parse(fields['end']);
+      date = DateTimeRange(
+        start: start,
+        end: end,
+      );
+    });
   }
 
-  void onEdit(BuildContext context) async {
+  Future<void> geocode(String address) async {
+    final List<Location> locations = await locationFromAddress(address);
+    current_loc = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+    setState(() {
+      send_loc = LatLng(locations[0].latitude, locations[0].longitude);
+    });
+  }
+
+  Future<void> showMap() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => EventMap(
+              loc: send_loc,
+              current_loc: current_loc,
+            )));
+  }
+
+  Future<void> onEdit(BuildContext context) async {
     await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => EventForm(
-              ref: widget.ref,
-            )));
+                  ref: widget.ref,
+                )));
     await retrieveData();
     setState(() {});
+  }
+
+  Widget buildAttendanceGraph(BuildContext context) {
+    return charts.BarChart(
+      [
+        charts.Series<int, String>(
+          id: AppLocalizations.of(context)!.attendence,
+          domainFn: (datum, index) => AppLocalizations.of(context)!.attendence,
+          measureFn: (datum, index) => datum,
+          data: [attendence ?? 0],
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          fillColorFn: (_, __) =>
+              charts.MaterialPalette.blue.shadeDefault.lighter,
+        ),
+        charts.Series<int, String>(
+          id: AppLocalizations.of(context)!.attendenceCap,
+          domainFn: (datum, index) =>
+              AppLocalizations.of(context)!.attendenceCap,
+          measureFn: (datum, index) => datum,
+          data: [attendenceCap ?? 0],
+          colorFn: (_, __) => charts.MaterialPalette.gray.shadeDefault,
+          fillColorFn: (_, __) =>
+              charts.MaterialPalette.gray.shadeDefault.lighter,
+        ),
+      ],
+      animate: false,
+      vertical: false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => onEdit(context),
-              icon: const Icon(Icons.edit),
-            ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: retrieveData(),
-          builder: ((context, snapshot) {
-            // if (!snapshot.hasData) return const Text("Loading...");
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => onEdit(context),
+            icon: const Icon(Icons.edit),
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: retrieveData(),
+        builder: ((context, snapshot) {
+          // if (!snapshot.hasData) return const LoadingSpinner();
 
-            return Padding(
+          return LayoutBuilder(
+            builder: (context, constraints) => Container(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
               padding: const EdgeInsets.all(4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: ListView(
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Container(
+                    width: constraints.maxWidth / 4,
+                    height: constraints.maxHeight / 4,
+                    child: buildAttendanceGraph(context),
+                  ),
                   Text(
                     AppLocalizations.of(context)!.when,
                     style: widget.labelStyle,
@@ -98,7 +158,6 @@ class _EventViewState extends State<EventView> {
                     ),
                     // TODO: pretty date, calendar?
                   ),
-
                   Text(
                     AppLocalizations.of(context)!.where,
                     style: widget.labelStyle,
@@ -107,7 +166,6 @@ class _EventViewState extends State<EventView> {
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
                     child: Text(location ?? ""),
                   ),
-
                   Text(
                     AppLocalizations.of(context)!.what,
                     style: widget.labelStyle,
@@ -116,41 +174,21 @@ class _EventViewState extends State<EventView> {
                     padding: const EdgeInsets.only(top: 4, bottom: 12),
                     child: Text(description ?? ""),
                   ),
-
                   FloatingActionButton(
-                    onPressed: (){
-                        geocode(location);
-                        setState(() {
-                          showMap();
-                        });
+                    onPressed: () {
+                      geocode(location ?? '');
+                      setState(() {
+                        showMap();
+                      });
                     },
-                    child: Icon(Icons.map),
+                    child: const Icon(Icons.map),
                   ),
-                  
                 ],
               ),
-            );
-          }),
-        ),
-      );
-  }
-
-  void geocode(address) async{
-    final List<Location> locations = await locationFromAddress(address);
-    current_loc = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-    setState(() {
-      send_loc = LatLng(locations[0].latitude, locations[0].longitude);
-    });
-    
-  }
-
-  showMap() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => EventMap(
-        loc: send_loc,
-        current_loc: current_loc,
-      ))
+            ),
+          );
+        }),
+      ),
     );
   }
 }

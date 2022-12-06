@@ -5,7 +5,7 @@ import 'package:events_service/UserModel.dart';
 import 'package:flutter/material.dart';
 
 class EventTile extends StatelessWidget {
-  EventTile({
+  const EventTile({
     super.key,
     required this.title,
     required this.location,
@@ -20,7 +20,7 @@ class EventTile extends StatelessWidget {
   final bool attending;
   final Function updateAttending;
 
-  void onTapTile(BuildContext context) {
+  void _onTapTile(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -36,7 +36,7 @@ class EventTile extends StatelessWidget {
         attending ? Icons.radio_button_checked : Icons.radio_button_unchecked;
     return Card(
       child: GestureDetector(
-        onTap: () => onTapTile(context),
+        onTap: () => _onTapTile(context),
         child: ListTile(
           title: Text(title),
           subtitle: Text(location),
@@ -47,7 +47,7 @@ class EventTile extends StatelessWidget {
               GestureDetector(
                 onTap: () => updateAttending(),
                 child: Icon(icon),
-              )
+              ),
             ],
           ),
         ),

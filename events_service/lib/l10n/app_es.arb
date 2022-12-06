@@ -30,5 +30,7 @@
     "notifications": "Notificaciones",
     "welcome": "Bienvenido de nuevo.",
     "schedule": "Veamos lo que tiene programado",
-    "channelDesc": "Actualmente es sólo una bienvenida, pero pronto contendrá recordatorios programados."
+    "channelDesc": "Actualmente es sólo una bienvenida, pero pronto contendrá recordatorios programados.",
+
+    "attendenceCap": "Límite de asistencia"
 }
