@@ -34,12 +34,6 @@ class _EventMapState extends State<EventMap> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Geolocator.isLocationServiceEnabled().then((value) => null);
-    Geolocator.requestPermission().then((value) => null);
-    Geolocator.checkPermission().then((LocationPermission permission) {
-      print("Check Location Permission: $permission");
-    });
-
     Geolocator.getPositionStream(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.best),
     ).listen(_updateLocationStream);

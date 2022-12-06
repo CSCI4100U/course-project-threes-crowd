@@ -82,17 +82,6 @@ class _EventViewState extends State<EventView> {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    
-    
-    /*
-    current_loc = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    send_loc = LatLng(locations[0].latitude, locations[0].longitude);
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => EventMap(
-              loc: send_loc,
-              current_loc: current_loc,
-            )));*/
   }
 
   Future<void> onEdit(BuildContext context) async {
@@ -131,6 +120,15 @@ class _EventViewState extends State<EventView> {
       animate: false,
       vertical: false,
     );
+  }
+
+  @override
+  void initState() {
+    Geolocator.isLocationServiceEnabled().then((value) => null);
+    Geolocator.requestPermission().then((value) => null);
+    Geolocator.checkPermission().then((LocationPermission permission) {
+      print("Check Location Permission: $permission");
+    });
   }
 
   @override
