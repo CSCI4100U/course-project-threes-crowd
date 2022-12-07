@@ -123,16 +123,6 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(AppLocalizations.of(context)!.about),
               ),
             ),
-            /*
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-              child: ElevatedButton(
-                onPressed: (){
-                  showAbout(context);
-                },
-                child: Text("About"),
-              ),
-          )*/
           ],
         ),
       ),
@@ -144,7 +134,6 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         applicationName: AppLocalizations.of(context)!.title,
         applicationVersion: "1.0",
-        applicationLegalese: "xxx",
         children: [
           Text(AppLocalizations.of(context)!.appDesc),
         ]);
